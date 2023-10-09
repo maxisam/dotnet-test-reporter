@@ -1,5 +1,7 @@
+import * as core from '@actions/core';
+import { context, getOctokit } from '@actions/github/lib/github';
 import { GitHub } from '@actions/github/lib/utils';
-import { getOctokit, context } from '@actions/github/lib/github';
+import { inspect } from 'util';
 import { formatFooterMarkdown, formatHeaderMarkdown, formatSummaryLinkMarkdown } from '../formatting/markdown';
 import { log } from './action';
 
@@ -58,6 +60,9 @@ const getExistingComment = async (octokit: Octokit, context: IContext, header: s
   const { owner, repo, issueNumber } = context;
   const comments = await octokit.rest.issues.listComments({ owner, repo, issue_number: issueNumber });
 
+  core.startGroup('Existing comments');
+  core.info(`${inspect(comments)}`);
+  core.endGroup();
   return comments.data?.find(comment => {
     const isBotUserType = comment.user?.type === 'Bot';
     const startsWithHeader = comment.body?.startsWith(header);
