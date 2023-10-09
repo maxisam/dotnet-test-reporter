@@ -879,10 +879,11 @@ const getExistingComment = (octokit, context, header) => __awaiter(void 0, void 
     core.startGroup('Existing comments');
     core.info(`${(0, util_1.inspect)(comments)}`);
     core.endGroup();
+    const username = yield octokit.rest.users.getAuthenticated();
     return (_a = comments.data) === null || _a === void 0 ? void 0 : _a.find(comment => {
-        var _a, _b;
-        const isBotUserType = ((_a = comment.user) === null || _a === void 0 ? void 0 : _a.type) === 'Bot';
-        const startsWithHeader = (_b = comment.body) === null || _b === void 0 ? void 0 : _b.startsWith(header);
+        var _a, _b, _c;
+        const isBotUserType = ((_a = comment.user) === null || _a === void 0 ? void 0 : _a.login) === ((_b = username.data) === null || _b === void 0 ? void 0 : _b.login);
+        const startsWithHeader = (_c = comment.body) === null || _c === void 0 ? void 0 : _c.startsWith(header);
         return isBotUserType && startsWithHeader;
     });
 });
