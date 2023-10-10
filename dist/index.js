@@ -872,17 +872,28 @@ const getContext = () => {
     const [owner, repo] = ((_b = repository === null || repository === void 0 ? void 0 : repository.full_name) === null || _b === void 0 ? void 0 : _b.split('/')) || [];
     return { owner, repo, issueNumber, commit: after, runId };
 };
-const getExistingComment = (octokit, context, header) => __awaiter(void 0, void 0, void 0, function* () {
+const tryGetUserLogin = (octokit) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    try {
+        const username = yield octokit.rest.users.getAuthenticated();
+        return (_a = username.data) === null || _a === void 0 ? void 0 : _a.login;
+    }
+    catch (_b) {
+        // when token doesn't have user scope
+        return undefined;
+    }
+});
+const getExistingComment = (octokit, context, header) => __awaiter(void 0, void 0, void 0, function* () {
+    var _c;
     const { owner, repo, issueNumber } = context;
     const comments = yield octokit.rest.issues.listComments({ owner, repo, issue_number: issueNumber });
     core.startGroup('Existing comments');
     core.info(`${(0, util_1.inspect)(comments)}`);
     core.endGroup();
-    const username = yield octokit.rest.users.getAuthenticated();
-    return (_a = comments.data) === null || _a === void 0 ? void 0 : _a.find(comment => {
+    const userLogin = yield tryGetUserLogin(octokit);
+    return (_c = comments.data) === null || _c === void 0 ? void 0 : _c.find(comment => {
         var _a, _b, _c;
-        const isBotUserType = ((_a = comment.user) === null || _a === void 0 ? void 0 : _a.login) === ((_b = username.data) === null || _b === void 0 ? void 0 : _b.login);
+        const isBotUserType = ((_a = comment.user) === null || _a === void 0 ? void 0 : _a.type) === 'Bot' || ((_b = comment.user) === null || _b === void 0 ? void 0 : _b.login) === userLogin;
         const startsWithHeader = (_c = comment.body) === null || _c === void 0 ? void 0 : _c.startsWith(header);
         return isBotUserType && startsWithHeader;
     });

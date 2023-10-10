@@ -56,6 +56,15 @@ const getContext = (): IContext => {
   return { owner, repo, issueNumber, commit: after, runId };
 };
 
+const tryGetUserLogin = async (octokit: Octokit) => {
+  try {
+    const username = await octokit.rest.users.getAuthenticated();
+    return username.data?.login;
+  } catch {
+    // when token doesn't have user scope
+    return undefined;
+  }
+};
 const getExistingComment = async (octokit: Octokit, context: IContext, header: string) => {
   const { owner, repo, issueNumber } = context;
   const comments = await octokit.rest.issues.listComments({ owner, repo, issue_number: issueNumber });
@@ -63,10 +72,10 @@ const getExistingComment = async (octokit: Octokit, context: IContext, header: s
   core.startGroup('Existing comments');
   core.info(`${inspect(comments)}`);
   core.endGroup();
-  const username = await octokit.rest.users.getAuthenticated();
+  const userLogin = await tryGetUserLogin(octokit);
 
   return comments.data?.find(comment => {
-    const isBotUserType = comment.user?.login === username.data?.login;
+    const isBotUserType = comment.user?.type === 'Bot' || comment.user?.login === userLogin;
     const startsWithHeader = comment.body?.startsWith(header);
 
     return isBotUserType && startsWithHeader;
