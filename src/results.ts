@@ -1,9 +1,9 @@
 import { glob } from 'glob';
 import { IResult } from './data';
-import { log, setFailed, setResultOutputs } from './utils';
 import parseTrx from './parsers/trx';
+import { log, setResultOutputs } from './utils';
 
-export const processTestResults = async (resultsPath: string, allowFailedTests: boolean): Promise<IResult> => {
+export const processTestResults = async (resultsPath: string): Promise<IResult> => {
   const aggregatedResult = getDefaultTestResult();
   const filePaths = await glob(resultsPath);
   const trxPaths = filePaths.filter(path => path.endsWith('.trx'));
@@ -18,9 +18,7 @@ export const processTestResults = async (resultsPath: string, allowFailedTests: 
 
   setResultOutputs(aggregatedResult);
 
-  if (!aggregatedResult.success) {
-    allowFailedTests ? log('Tests Failed') : setFailed('Tests Failed');
-  }
+  !aggregatedResult.success && log('Tests Failed');
 
   return aggregatedResult;
 };

@@ -1,8 +1,8 @@
-import { processTestResults } from './results';
 import { processTestCoverage } from './coverage';
-import { getInputs, publishComment, setFailed, setSummary } from './utils';
-import { formatCoverageMarkdown, formatResultMarkdown } from './formatting/markdown';
 import { formatCoverageHtml, formatResultHtml, formatTitleHtml } from './formatting/html';
+import { formatCoverageMarkdown, formatResultMarkdown } from './formatting/markdown';
+import { processTestResults } from './results';
+import { getInputs, publishComment, setFailed, setSummary } from './utils';
 
 const run = async (): Promise<void> => {
   try {
@@ -20,7 +20,7 @@ const run = async (): Promise<void> => {
     let comment = '';
     let summary = formatTitleHtml(title);
 
-    const testResult = await processTestResults(resultsPath, allowFailedTests);
+    const testResult = await processTestResults(resultsPath);
     comment += formatResultMarkdown(testResult);
     summary += formatResultHtml(testResult);
 
@@ -32,6 +32,7 @@ const run = async (): Promise<void> => {
 
     await setSummary(summary);
     await publishComment(token, title, comment, postNewComment);
+    !testResult.success && !allowFailedTests && setFailed('Tests Failed');
   } catch (error) {
     setFailed((error as Error).message);
   }

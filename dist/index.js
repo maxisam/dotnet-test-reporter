@@ -253,17 +253,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const results_1 = __nccwpck_require__(1530);
 const coverage_1 = __nccwpck_require__(3725);
-const utils_1 = __nccwpck_require__(7782);
-const markdown_1 = __nccwpck_require__(2519);
 const html_1 = __nccwpck_require__(9339);
+const markdown_1 = __nccwpck_require__(2519);
+const results_1 = __nccwpck_require__(1530);
+const utils_1 = __nccwpck_require__(7782);
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { token, title, resultsPath, coveragePath, coverageType, coverageThreshold, postNewComment, allowFailedTests } = (0, utils_1.getInputs)();
         let comment = '';
         let summary = (0, html_1.formatTitleHtml)(title);
-        const testResult = yield (0, results_1.processTestResults)(resultsPath, allowFailedTests);
+        const testResult = yield (0, results_1.processTestResults)(resultsPath);
         comment += (0, markdown_1.formatResultMarkdown)(testResult);
         summary += (0, html_1.formatResultHtml)(testResult);
         if (coveragePath) {
@@ -273,6 +273,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         }
         yield (0, utils_1.setSummary)(summary);
         yield (0, utils_1.publishComment)(token, title, comment, postNewComment);
+        !testResult.success && !allowFailedTests && (0, utils_1.setFailed)('Tests Failed');
     }
     catch (error) {
         (0, utils_1.setFailed)(error.message);
@@ -647,9 +648,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.processTestResults = void 0;
 const glob_1 = __nccwpck_require__(8211);
-const utils_1 = __nccwpck_require__(7782);
 const trx_1 = __importDefault(__nccwpck_require__(8682));
-const processTestResults = (resultsPath, allowFailedTests) => __awaiter(void 0, void 0, void 0, function* () {
+const utils_1 = __nccwpck_require__(7782);
+const processTestResults = (resultsPath) => __awaiter(void 0, void 0, void 0, function* () {
     const aggregatedResult = getDefaultTestResult();
     const filePaths = yield (0, glob_1.glob)(resultsPath);
     const trxPaths = filePaths.filter(path => path.endsWith('.trx'));
@@ -660,9 +661,7 @@ const processTestResults = (resultsPath, allowFailedTests) => __awaiter(void 0, 
         yield processResult(path, aggregatedResult);
     }
     (0, utils_1.setResultOutputs)(aggregatedResult);
-    if (!aggregatedResult.success) {
-        allowFailedTests ? (0, utils_1.log)('Tests Failed') : (0, utils_1.setFailed)('Tests Failed');
-    }
+    !aggregatedResult.success && (0, utils_1.log)('Tests Failed');
     return aggregatedResult;
 });
 exports.processTestResults = processTestResults;
