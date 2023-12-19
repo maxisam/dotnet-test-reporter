@@ -12,7 +12,7 @@ interface Header {
 }
 
 const outcomeIcons: { [key in TestOutcome]: string } = {
-  Passed: '✔️',
+  Passed: '✅',
   Failed: '❌',
   NotExecuted: '⚠️'
 };
@@ -24,7 +24,7 @@ export const formatResultHtml = (result: IResult): string => {
   let html = wrap('Tests', 'h3');
 
   html += formatTable(
-    [{ name: '✔️ Passed' }, { name: '❌ Failed' }, { name: '⚠️ Skipped' }, { name: '⏱️ Time' }],
+    [{ name: '✅ Passed' }, { name: '❌ Failed' }, { name: '⚠️ Skipped' }, { name: '⏱️ Time' }],
     [[`${result.passed}`, `${result.failed}`, `${result.skipped}`, formatElapsedTime(result.elapsed)]]
   );
 
