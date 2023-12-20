@@ -60,7 +60,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.formatElapsedTime = exports.getStatusIcon = exports.getSectionLink = void 0;
 const getSectionLink = (section) => section.toLowerCase().replace(/ /g, '-');
 exports.getSectionLink = getSectionLink;
-const getStatusIcon = (success) => (success ? '✔️' : '❌');
+const getStatusIcon = (success) => (success ? '✅' : '❌');
 exports.getStatusIcon = getStatusIcon;
 const formatElapsedTime = (elapsed) => {
     const secondsDelimiter = 1000;
