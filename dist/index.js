@@ -89,7 +89,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.formatCoverageHtml = exports.formatResultHtml = exports.formatTitleHtml = void 0;
 const common_1 = __nccwpck_require__(9759);
 const outcomeIcons = {
-    Passed: '✔️',
+    Passed: '✅',
     Failed: '❌',
     NotExecuted: '⚠️'
 };
@@ -97,7 +97,7 @@ const formatTitleHtml = (title) => wrap(title, { tag: 'h1', attributes: { id: (0
 exports.formatTitleHtml = formatTitleHtml;
 const formatResultHtml = (result) => {
     let html = wrap('Tests', 'h3');
-    html += formatTable([{ name: '✔️ Passed' }, { name: '❌ Failed' }, { name: '⚠️ Skipped' }, { name: '⏱️ Time' }], [[`${result.passed}`, `${result.failed}`, `${result.skipped}`, (0, common_1.formatElapsedTime)(result.elapsed)]]);
+    html += formatTable([{ name: '✅ Passed' }, { name: '❌ Failed' }, { name: '⚠️ Skipped' }, { name: '⏱️ Time' }], [[`${result.passed}`, `${result.failed}`, `${result.skipped}`, (0, common_1.formatElapsedTime)(result.elapsed)]]);
     html += result.suits.map(formatTestSuit).join('');
     return html;
 };
